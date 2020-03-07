@@ -21,15 +21,15 @@ def print_board(board):
 
 
 def clear_screen():
-  pass #print('\n'*100)
+  print('\n'*100)
 
 def read_players(players):
   symbols = ['x','o']
   player_name = input("Please type the Player1's name:")
   players['player1']['name'] = player_name
-  player_symbol = input(player_name+" do you want to be X or O?")
-  while(player_symbol.lower() not in symbols):
-    player_symbol = input("Invalid input, please select 'X' or 'O'")
+  player_symbol = input(player_name+" do you want to be X or O?").lower()
+  while(player_symbol not in symbols):
+    player_symbol = input("Invalid input, please select 'X' or 'O'").lower()
   players['player1']['name'] = player_name
   players['player1']['symbol'] = player_symbol.lower()
   
@@ -39,14 +39,13 @@ def read_players(players):
     player_symbol = 'o'
   else:
     player_symbol = 'x'
-  print(player_name+' will be '+player_symbol.upper())
   players['player2']['symbol'] = player_symbol.lower()
 
 def read_turn(game):
   current_player = game['players'][game['current_player']]
   valid_input = False
   while(not valid_input):
-    player_input = input(current_player['name']+", please select a valid position 1 and 9 which is empty:")
+    player_input = input(current_player['name']+", please select an empty valid position (1 ~ 9):")
     if player_input  in ['1','2','3','4','5','6','7','8','9']:
       board_position = map_input_to_board(player_input)
       if game['board'][board_position[0]][board_position[1]] == ' ':
@@ -54,7 +53,6 @@ def read_turn(game):
         current_player['played']['onboard'] = board_position
         current_player['played']['num'] = player_input
         valid_input = True
-  print(game)
 
 
 def map_input_to_board(player_input):
@@ -71,7 +69,7 @@ def select_current_player(game):
   elif game['current_player'] == 'player2':
     game['current_player'] = 'player1'
   elif game['current_player'] == '':
-    game['current_player'] = 'player1'
+    game['current_player'] = 'player2'
 
 def check_game_over(game):
   current_player = game['players'][game['current_player']]
@@ -82,21 +80,21 @@ def check_game_over(game):
   board = game['board']
   line = 0
   col = 0
-  diag = 0
+  diag1 = 0
+  diag2 = 0
   has_space = False
   for i in range(0,3):
-    if(board[l][i] == symbol):
+    if board[l][i] == symbol:
       line+=1
-    if(board[i][c] == symbol):
+    if board[i][c] == symbol:
       col+=1
-    if((l == c and board[i][i] == symbol) or ((position == (2,0) or position == (2,0)) and board[i][2-i] == symbol )):
-      diag+=1
+    if l == c and board[i][i] == symbol:
+      diag1+=1
+    if position in [(2,0), (0,2), (1,1)] and board[i][2-i] == symbol:
+      diag2+=1
     if(' ' in board[i]):
       has_space = True
-  print(line)
-  print(col)
-  print(diag)
-  if line == 3 or col == 3 or diag == 3:
+  if line == 3 or col == 3 or diag1 == 3 or diag2 == 3:
     game['game_over'] = True
   if not has_space:
     game['no_space'] = True
